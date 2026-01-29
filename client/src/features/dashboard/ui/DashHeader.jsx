@@ -12,8 +12,10 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import logo from '../../../assets/cogniflow_logo.png';
+import { CirclePlus } from 'lucide-react';
 
-const pages = ['Dashboard', 'Blog', 'Contact Us'];
+
+const pages = ['Dashboard', ' Goals ', 'Weekly Report' ];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function DashHeader() {
@@ -94,7 +96,7 @@ function DashHeader() {
             </Menu>
           </Box>
           <img src={logo} alt="COGNIFLOW Logo" style={{ height: '70px', marginRight: '10px', display: { xs: 'block', md: 'none' } }} />
-          <Typography
+          {/* <Typography
             variant="h5"
             noWrap
             component="a"
@@ -111,7 +113,7 @@ function DashHeader() {
             }}
           >
             COGNIFLOW
-          </Typography>
+          </Typography> */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
@@ -124,11 +126,25 @@ function DashHeader() {
             ))}
           </Box>
           <Box sx={{ flexGrow: 0 }}>
+            <div className="flex items-center space-x-4">
+ 
+ 
+            <Tooltip title="Create new goal">
+              <button className="flex items-center space-x-1 text-white hover:bg-blue-700 px-3 py-2 rounded-md transition">
+                <CirclePlus size={22} strokeWidth={1.5} />
+                <span>CREATE GOAL</span>
+              </button>
+            </Tooltip>
+
+
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="ok" src="" />
+                <Avatar alt="User Avatar" src="" />
               </IconButton>
             </Tooltip>
+          </div>
+
+            
             <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"
