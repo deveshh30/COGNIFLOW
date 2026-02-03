@@ -14,7 +14,7 @@ const ProgressBar = ({value}) => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setWidth(value);
-    }, 300); //100 is to add delay
+    }, 300); 
 
     return () => clearTimeout(timeout);
   }, [value]);
