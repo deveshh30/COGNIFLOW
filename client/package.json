@@ -1,5 +1,6 @@
 {
   "name": "client",
+  "homepage": "https://deveshh30.github.io/COGNIFLOW/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,7 +8,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy" : "npm run build",
+    "deploy" : "gh-pages -d dist"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -15,6 +18,7 @@
     "@mui/icons-material": "^5.18.0",
     "@mui/material": "^5.18.0",
     "@tailwindcss/vite": "^4.1.18",
+    "gh-pages": "^6.3.0",
     "lucide-react": "^0.563.0",
     "primereact": "^10.9.7",
     "react": "^19.2.0",

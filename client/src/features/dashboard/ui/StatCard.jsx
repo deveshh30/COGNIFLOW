@@ -11,7 +11,7 @@ const cardBase =
   "hover:-translate-y-1 hover:shadow-[0_22px_70px_rgba(0,0,0,0.85)] " +
   "h-[240px] w-full p-6 flex flex-col justify-between";
 
-const StatCard = ({ label, value, meta, progress, suffix = "" }) => {
+const StatCard = ({ label, value, meta, progress, status,  suffix = "" }) => {
   const { ref, isVisible } = useInView();
 
   return (
@@ -29,7 +29,7 @@ const StatCard = ({ label, value, meta, progress, suffix = "" }) => {
       </div>
 
       {progress !== undefined && isVisible && (
-        <ProgressBar value={progress} />
+        <ProgressBar value={progress} status={status} />
       )}
     </div>
   );
