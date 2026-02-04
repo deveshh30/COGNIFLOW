@@ -2,16 +2,39 @@ import ActiveGoal from "./ActiveGoal";
 import StatCard from "./StatCard";
 
 const stats = [
-  { label: "Total Goals", value: 12, meta: "+2 this week" },
-  { label: "Completed Goals", value: 7, meta: "58% completion", progress: 58 },
-  { label: "Streaks", value: 5, suffix: " days", meta: "Best: 12" },
-  { label: "Weekly Progress", value: 65, suffix: "%", meta: "↑ 10%", progress: 65 },
+  { 
+    label: "Total Goals", 
+    value: 12, 
+    meta: "+2 this week",
+    trend : "up",
+  },
+  { 
+    label: "Completed Goals", 
+    value: 7, 
+    meta: "58% completion", 
+    progress: 58 ,
+    trend : "up",
+  },
+  { 
+    label: "Streaks", 
+    value: 5, suffix: " days", 
+    meta: "Best : 12",
+    trend : "neutral",
+  },
+  {
+    label: "Weekly Progress",
+    value: 65,
+    suffix: "%",
+    meta: "↑ 10%",
+    progress: 65,
+    trend : "down",
+  },
 ];
 
 const activeGoals = [
   { title: "DSA Practice", progress: 40, status: "On Track" },
   { title: "React Project", progress: 70, status: "At Risk" },
-  ]
+];
 
 const DashCard = () => (
   <div className="min-h-screen w-full bg-[#141414] px-6 pt-16">
@@ -21,24 +44,18 @@ const DashCard = () => (
           <StatCard key={i} {...stat} />
         ))}
       </div>
-
       <h2 className="mt-14 mb-6 ml-2 text-xl font-semibold text-gray-200">
         Active Goals
       </h2>
-      
-      {activeGoals.map((goal,index) => (  
-
-      <ActiveGoal
-      key={index}
-      title={goal.title}
-      progress={goal.progress}
-      status={goal.status}
-      />
-
-      ))};
-
-    
-    
+      {activeGoals.map((goal, index) => (
+        <ActiveGoal
+          key={index}
+          title={goal.title}
+          progress={goal.progress}
+          status={goal.status}
+        />
+      ))}
+      ;
     </div>
   </div>
 );

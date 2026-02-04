@@ -8,8 +8,8 @@ const STATUS_STYLES = {
 
 const ActiveGoal = ({ title, progress, status }) => {
   return (
-    <div className="rounded-2xl bg-[#1b1b1b] border border-white/5 p-5 shadow">
-      <div className="flex items-center justify-between mb-5">
+    <div className="rounded-2xl bg-[#1b1b1b] border border-white/5 mb-10 p-5 shadow">
+      <div className="flex items-center justify-between ">
         <h3 className="text-sm font-medium text-gray-100">
           {title}
         </h3>
