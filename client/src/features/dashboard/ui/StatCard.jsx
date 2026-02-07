@@ -9,7 +9,7 @@ const cardBase =
   "shadow-[0_14px_45px_rgba(0,0,0,0.7)] " +
   "transition-all duration-300 ease-out " +
   "hover:-translate-y-1 hover:shadow-[0_22px_70px_rgba(0,0,0,0.85)] " +
-  "h-[240px] w-full p-6 flex flex-col justify-between";
+  "h-[220px] w-full p-5 flex flex-col justify-between";
 
 const TREND_ARROW = {
   up: {
