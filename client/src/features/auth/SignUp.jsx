@@ -13,7 +13,8 @@ const SignUp = () => {
       await API.post('/auth/register', formData);
       navigate('/login');
     } catch (err) {
-      alert("Registration failed.");
+      const message = err?.response?.data?.message || "Registration failed.";
+      alert(message);
     }
   };
 

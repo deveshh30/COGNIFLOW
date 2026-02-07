@@ -3,14 +3,23 @@ import { ApiError } from "../utils/ApiError.js";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import JWT from "jsonwebtoken";
+import mongoose from "mongoose";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const RegisterUser = asyncHandler(async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    if ([email, name, password].some((field) => field?.trim() === "")) {
+    if (mongoose.connection.readyState !== 1) {
+      throw new ApiError(503, "Database not connected");
+    }
+
+    if ([email, name, password].some((field) => !field || field.trim() === "")) {
       throw new ApiError(400, "All fields are required");
+    }
+
+    if (password.length < 6) {
+      throw new ApiError(400, "Password must be at least 6 characters");
     }
 
     const existedUser = await User.findOne({
@@ -34,7 +43,20 @@ const RegisterUser = asyncHandler(async (req, res) => {
       .status(201)
       .json(new ApiResponse(200, user , "User registered Successfully"));
   } catch (error) {
-    throw new ApiError(500, error, "failed to register new User");
+    if (error?.code === 11000) {
+      throw new ApiError(409, "User with email already exists", error);
+    }
+
+    if (error?.name === "ValidationError") {
+      throw new ApiError(400, error.message, error);
+    }
+
+    if (error instanceof ApiError) throw error;
+    throw new ApiError(
+      500,
+      error?.message || "failed to register new User",
+      error
+    );
   }
 });
 
@@ -84,4 +106,8 @@ const LoginUser = asyncHandler(async (req, res) => {
   }
 });
 
-export { RegisterUser, LoginUser };
+
+
+export { RegisterUser, 
+         LoginUser,
+          };

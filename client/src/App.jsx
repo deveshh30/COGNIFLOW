@@ -8,7 +8,8 @@ import Dashboard from './features/dashboard/ui/Dashboard';
 function App() {
   return (
     <AuthProvider> 
-      <Router>
+          <Router basename="/COGNIFLOW">
+      
         <main className="min-h-screen bg-[#050505]">
           <Routes>
             <Route path="/" element={<Navigate to="/login" />} />
@@ -20,6 +21,7 @@ function App() {
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         </main>
+      
       </Router>
     </AuthProvider>
   );
