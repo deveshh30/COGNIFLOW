@@ -3,27 +3,21 @@ import CountUp from "./CountUp.jsx";
 import useInView from "../../../hooks/useInView";
 import { TrendingUp, TrendingDown, TrendingUpDown } from "lucide-react";
 
+// Optimized for GPU performance and Crystal aesthetics
 const cardBase =
-  "relative rounded-3xl border border-white/5 " +
-  "bg-gradient-to-br from-[#1d1d1d] to-[#141414] " +
-  "shadow-[0_14px_45px_rgba(0,0,0,0.7)] " +
+  "relative rounded-3xl border border-white/10 " +
+  "backdrop-blur-md bg-white/[0.03] " + // The "Crystal" effect
+  "shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] " +
   "transition-all duration-300 ease-out " +
-  "hover:-translate-y-1 hover:shadow-[0_22px_70px_rgba(0,0,0,0.85)] " +
-  "h-[220px] w-full p-5 flex flex-col justify-between";
+  "hover:bg-white/[0.06] hover:border-white/20 " +
+  "transform-gpu will-change-transform " + // GPU Acceleration
+  "hover:-translate-y-1 " +
+  "h-[220px] w-full p-6 flex flex-col justify-between overflow-hidden";
 
 const TREND_ARROW = {
-  up: {
-    icon: TrendingUp,
-    color: "text-green-400",
-  },
-  down: {
-    icon: TrendingDown,
-    color: "text-red-400",
-  },
-  neutral: {
-    icon: TrendingUpDown,
-    color: "text-gray-400",
-  },
+  up: { icon: TrendingUp, color: "text-emerald-400" },
+  down: { icon: TrendingDown, color: "text-rose-400" },
+  neutral: { icon: TrendingUpDown, color: "text-gray-400" },
 };
 
 const StatCard = ({
@@ -41,24 +35,31 @@ const StatCard = ({
 
   return (
     <div ref={ref} className={cardBase}>
-      <p className="text-[11px] uppercase tracking-[0.2em] text-gray-400">
+      {/* Subtle top-light effect for crystal depth */}
+      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      
+      <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-semibold">
         {label}
       </p>
 
-      <div>
-        <p className="text-4xl font-bold text-gray-100">
+      <div className="relative z-10">
+        <p className="text-5xl font-bold text-white tracking-tight">
           {isVisible && <CountUp value={value} />}
-          {suffix}
+          <span className="text-2xl ml-1 text-gray-400">{suffix}</span>
         </p>
 
-        <p className="text-sm mt-1 flex items-center gap-1">
-          <Icon className={`w-4 h-4 ${trendConfig.color}`} />
-          <span className="text-gray-400">{meta}</span>
-        </p>
+        <div className="text-sm mt-2 flex items-center gap-1.5">
+          <div className={`p-1 rounded-md ${trendConfig.color} bg-current/10`}>
+            <Icon className="w-3.5 h-3.5" />
+          </div>
+          <span className="text-gray-400 font-medium">{meta}</span>
+        </div>
       </div>
 
       {progress !== undefined && isVisible && (
-        <ProgressBar value={progress} status={status} />
+        <div className="pt-2">
+          <ProgressBar value={progress} status={status} />
+        </div>
       )}
     </div>
   );
