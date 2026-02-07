@@ -1,18 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Mail, Lock, UserPlus, Sparkles } from 'lucide-react';
 import Antigravity from '../../components/ui/Bg.particle'
 import API from '../../services/api';
+import { AuthContext } from '../../context/AuthContext';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await API.post('/auth/register', formData);
-      navigate('/login');
+      await login(formData.email, formData.password);
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       const message = err?.response?.data?.message || "Registration failed.";
       alert(message);
