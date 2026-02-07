@@ -21,8 +21,7 @@ const userSchema = new mongoose.Schema({
 
     productivityStyle : {
         type : String,
-        enum : ['Analytical', 'Creative', 'Fast-paced', 'Balanced'],
-        default : "balanced"
+        enum : ['Analytical', 'Creative', 'Fast-paced', 'Balanced']
     }
 }, {timestamps : true});
 
