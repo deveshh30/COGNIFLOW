@@ -6,9 +6,10 @@ import SkeletonStatCard from "./SkeletonStatCard";
 import EmptyState from "./EmptyState";
 import ActiveGoal from "./ActiveGoal";
 import useDashboardData from "../../../hooks/useDashboard";
+import { motion , AnimatePresence} from "framer-motion";
 
 const Dashboard = () => {
-  // 1. STATE MANAGEMENT
+  
   const [isModalOpen, setIsmodalOpen] = useState(false);
   const [goals, setGoals] = useState([]);
 
@@ -26,6 +27,11 @@ const Dashboard = () => {
     setIsmodalOpen(false); 
   };
 
+  const handleDeleteGoal = (indexToDelete) => {
+    const updatedGoals = goals.filter((_, index) => index !== indexToDelete);
+    setGoals(updatedGoals);
+  }
+
   const { data, loading } = useDashboardData();
 
   const gridClassName = `grid grid-cols-1 md:grid-cols-2 gap-8 ${
@@ -35,6 +41,7 @@ const Dashboard = () => {
   }`;
 
   return (
+
     <div className="min-h-screen bg-[#050505] relative overflow-hidden pb-20">
       
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none" />
@@ -87,20 +94,29 @@ const Dashboard = () => {
             </div>
             
             <div className="grid grid-cols-1 gap-4">
-              {goals.map((goal, index) => (
-                <ActiveGoal
-                  key={index}
-                  title={goal.title}
-                  progress={goal.progress}
-                  status={goal.status}
-                />
-              ))}
+              <AnimatePresence>
+      {goals.map((goal, index) => (
+        <motion.div
+          key={goal.title} // IMPORTANT: Use a unique ID or title, NOT the index for animations
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 50, scale: 0.95 }}
+          transition={{ duration: 0.5 }}
+        >
+          <ActiveGoal
+            index={index}
+            onDelete={handleDeleteGoal}
+            {...goal}
+          />
+        </motion.div>
+      ))}
+    </AnimatePresence>
             </div>
           </section>
         </div>
       </div>
 
-      {/* 4. THE CRYSTAL MODAL (Fixed at Root Level) */}
+
       {isModalOpen && (
         <div 
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"

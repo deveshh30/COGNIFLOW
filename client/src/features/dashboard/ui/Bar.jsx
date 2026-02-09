@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
 const BAR_COLORS = {
-  "On Track": "bg-green-500",
-  "At Risk": "bg-yellow-500",
-  "Off Track": "bg-red-500",
+  "on track": "bg-green-500",
+  "at risk": "bg-yellow-500",
+  "off track": "bg-red-500",
 };
 
 const ProgressBar = ({ value, status }) => {
@@ -17,12 +17,15 @@ const ProgressBar = ({ value, status }) => {
     return () => clearTimeout(timeout);
   }, [value]);
 
+  const normalizedStatus =
+    typeof status === "string" ? status.trim().toLowerCase() : status;
+
   return (
     <div className="mt-4">
       <div className="w-full h-2 rounded-full bg-[#2a2a2a] overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-700 ${
-            BAR_COLORS[status] || "bg-gray-500"
+            BAR_COLORS["on track"] || "bg-gray-500"
           }`}
           style={{ width: `${width}%` }}
         />

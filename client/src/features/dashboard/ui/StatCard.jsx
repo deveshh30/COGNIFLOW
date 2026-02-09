@@ -3,7 +3,14 @@ import CountUp from "./CountUp.jsx";
 import useInView from "../../../hooks/useInView";
 import { TrendingUp, TrendingDown, TrendingUpDown } from "lucide-react";
 
-// Optimized for GPU performance and Crystal aesthetics
+
+const BAR_COLORS = {
+  "On Track": "bg-green-500",
+  "At Risk": "bg-yellow-500",
+  "Off Track": "bg-red-500",
+};
+
+
 const cardBase =
   "relative rounded-3xl border border-white/10 " +
   "backdrop-blur-md bg-white/[0.03] " + // The "Crystal" effect
@@ -35,7 +42,7 @@ const StatCard = ({
 
   return (
     <div ref={ref} className={cardBase}>
-      {/* Subtle top-light effect for crystal depth */}
+      
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       
       <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-semibold">
