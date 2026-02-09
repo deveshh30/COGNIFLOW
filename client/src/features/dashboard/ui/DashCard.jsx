@@ -31,31 +31,19 @@ const stats = [
   },
 ];
 
-const activeGoals = [
-  { title: "DSA Practice", progress: 40, status: "On Track" },
-  { title: "React Project", progress: 70, status: "At Risk" },
-];
+// const activeGoals = [
+//   { title: "DSA Practice", progress: 40, status: "On Track" },
+//   { title: "React Project", progress: 70, status: "At Risk" },
+// ];
 
 const DashCard = () => (
-  <div className="min-h-screen w-full bg-[#141414] px-6 pt-16">
-    <div className="max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+  <div className="w-full h-auto bg-[#1a1a1a] border border-white/5 rounded-[2.5rem] p-8 overflow-hidden rounded-4xl px-6 pt-16 py-30 justify-center">
+    <div className="max-w-7xl  mx-auto">
+      <div className="grid bg-black/10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {stats.map((stat, i) => (
           <StatCard key={i} {...stat} />
         ))}
       </div>
-      <h2 className="mt-14 mb-6 ml-2 text-xl font-semibold text-gray-200">
-        Active Goals
-      </h2>
-      {activeGoals.map((goal, index) => (
-        <ActiveGoal
-          key={index}
-          title={goal.title}
-          progress={goal.progress}
-          status={goal.status}
-        />
-      ))}
-      ;
     </div>
   </div>
 );

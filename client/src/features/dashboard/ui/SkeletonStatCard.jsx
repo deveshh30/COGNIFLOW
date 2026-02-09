@@ -1,5 +1,7 @@
 const SkeletonStatCard = () => {
   return (
+  
+    
     <div className="relative rounded-3xl border border-white/5 
       bg-[#141414] h-60 w-full p-6 
       animate-pulse flex flex-col justify-between">
@@ -13,6 +15,7 @@ const SkeletonStatCard = () => {
 
       <div className="h-2 w-full bg-white/10 rounded" />
     </div>
+    
   );
 };
 
