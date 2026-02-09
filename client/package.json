@@ -1,6 +1,6 @@
 {
   "name": "client",
-  "homepage": "https://deveshh30.github.io/COGNIFLOW/",
+  // "homepage": "https://deveshh30.github.io/COGNIFLOW/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,8 +9,6 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

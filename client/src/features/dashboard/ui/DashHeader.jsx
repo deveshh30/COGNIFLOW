@@ -15,7 +15,7 @@ const pages = [
   { label: "Weekly Report", path: "/report" },
 ];
 
-function DashHeader() {
+function DashHeader({onOpenModal}) {
   const { user, logout } = React.useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -37,14 +37,13 @@ function DashHeader() {
     <AppBar position="static" sx={{ backgroundColor: "#141414", borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          {/* LOGO - Desktop */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, mr: 2 }}>
             <Link to="/">
               <img src={logo} alt="COGNIFLOW" style={{ height: "50px" }} />
             </Link>
           </Box>
 
-          {/* MOBILE MENU */}
+
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton size="large" onClick={handleOpenNavMenu} color="inherit">
               <MenuIcon />
@@ -63,12 +62,12 @@ function DashHeader() {
             </Menu>
           </Box>
 
-          {/* LOGO - Mobile */}
+
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
              <img src={logo} alt="COGNIFLOW" style={{ height: "40px" }} />
           </Box>
 
-          {/* DESKTOP NAV ITEMS */}
+
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
@@ -82,7 +81,7 @@ function DashHeader() {
             ))}
           </Box>
 
-          {/* RIGHT SIDE: AUTH BUTTONS OR USER PROFILE */}
+
           <Box sx={{ flexGrow: 0 }}>
             {!user ? (
               <Box sx={{ display: 'flex', gap: 2 }}>
@@ -94,7 +93,7 @@ function DashHeader() {
             ) : (
               <div className="flex items-center space-x-4">
                 <Tooltip title="Create new goal">
-                  <button className="hidden md:flex items-center space-x-1 text-white hover:bg-white/10 px-3 py-2 rounded-md transition border border-white/20">
+                  <button onClick={onOpenModal} className="hidden md:flex items-center space-x-1 text-white hover:bg-white/10 px-3 py-2 rounded-md transition border border-white/20">
                     <CirclePlus size={18} />
                     <span className="text-sm font-medium">CREATE GOAL</span>
                   </button>
