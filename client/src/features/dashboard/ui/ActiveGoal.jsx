@@ -1,6 +1,6 @@
 import ProgressBar from "./Bar";
 
-const ActiveGoal = ({ title, progress, status, index, onDelete }) => {
+const ActiveGoal = ({ id, title, progress, status, onDelete }) => {
   const STATUS_STYLES = {
     "On Track": "bg-green-500/10 text-green-400 border-green-500/20",
     "At Risk": "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
@@ -12,7 +12,7 @@ const ActiveGoal = ({ title, progress, status, index, onDelete }) => {
     <div className="group relative rounded-2xl bg-[#1b1b1b] border border-white/5 mb-6 p-5 shadow transition-all hover:border-white/10">
 
       <button 
-        onClick={() => onDelete(index)}
+        onClick={() => onDelete(id)}
         /* The opacity-0 will now change to 100 when you hover the card */
         className="absolute -top-2 -right-2 z-20 bg-[#1b1b1b] border border-white/10 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/20 hover:border-red-500/50 text-gray-400 hover:text-red-500"
         title="Delete Goal"

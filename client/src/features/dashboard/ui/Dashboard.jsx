@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DashHeader from "./DashHeader";
 import DashCard from "./DashCard";
 import StatCard from "./StatCard";
@@ -7,6 +7,7 @@ import EmptyState from "./EmptyState";
 import ActiveGoal from "./ActiveGoal";
 import useDashboardData from "../../../hooks/useDashboard";
 import { motion , AnimatePresence} from "framer-motion";
+import API from "../../../services/api";
 
 const Dashboard = () => {
   
@@ -14,23 +15,43 @@ const Dashboard = () => {
   const [goals, setGoals] = useState([]);
 
   
-  const handleAddGoal = (name) => {
-    if (!name || name.trim() === "") return;
-    
-    const newGoal = {
-      title: name,
-      progress: 0,
-      status: "On Track",
+  useEffect(() => {
+    const fetchGoals = async () => {
+      try {
+        const { data } = await API.get("/goals/all");
+        setGoals(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Failed to load goals:", err);
+      }
     };
 
-    setGoals([...goals, newGoal]); 
-    setIsmodalOpen(false); 
+    fetchGoals();
+  }, []);
+
+  const handleAddGoal = async (name) => {
+    if (!name || name.trim() === "") return;
+
+    try {
+      const { data: createdGoal } = await API.post("/goals/add", {
+        title: name.trim(),
+      });
+      setGoals((prev) => [createdGoal, ...prev]);
+      setIsmodalOpen(false);
+    } catch (err) {
+      console.error("Failed to create goal:", err);
+      alert("Could not create the goal. Please try again.");
+    }
   };
 
-  const handleDeleteGoal = (indexToDelete) => {
-    const updatedGoals = goals.filter((_, index) => index !== indexToDelete);
-    setGoals(updatedGoals);
-  }
+  const handleDeleteGoal = async (id) => {
+    try {
+      await API.delete(`/goals/${id}`);
+      setGoals((prev) => prev.filter((goal) => goal._id !== id));
+    } catch (err) {
+      console.error("Failed to delete goal:", err);
+      alert("Could not delete the goal. Please try again.");
+    }
+  };
 
   const { data, loading } = useDashboardData();
 
@@ -95,16 +116,16 @@ const Dashboard = () => {
             
             <div className="grid grid-cols-1 gap-4">
               <AnimatePresence>
-      {goals.map((goal, index) => (
+      {goals.map((goal) => (
         <motion.div
-          key={goal.title} // IMPORTANT: Use a unique ID or title, NOT the index for animations
+          key={goal._id || goal.title}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 50, scale: 0.95 }}
           transition={{ duration: 0.5 }}
         >
           <ActiveGoal
-            index={index}
+            id={goal._id}
             onDelete={handleDeleteGoal}
             {...goal}
           />

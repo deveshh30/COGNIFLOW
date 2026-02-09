@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import mongoose from 'mongoose';
 import express from 'express';
 import authRoutes from './src/routes/Auth.Routes.js';
+import GoalRoutes from "./src/routes/Goal.routes.js";
 
 dotenv.config();
 const app = express();
@@ -15,6 +16,7 @@ app.use(cors({
     credentials: true
 }));
 app.use('/api/auth', authRoutes);
+app.use('/api/goals' , GoalRoutes);
 
 // Global error handler
 app.use((err, req, res, next) => {
