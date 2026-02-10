@@ -9,11 +9,14 @@ import { CirclePlus, LogOut, User as UserIcon, Settings } from "lucide-react";
 import logo from "../../../assets/logo.png";
 import { AuthContext } from "../../../context/AuthContext"; 
 
+
 const pages = [
   { label: "Dashboard", path: "/dashboard" },
   { label: "Goals", path: "/goals" },
   { label: "Weekly Report", path: "/report" },
 ];
+
+const userAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=user.name`;
 
 function DashHeader({onOpenModal}) {
   const { user, logout } = React.useContext(AuthContext);
@@ -101,7 +104,18 @@ function DashHeader({onOpenModal}) {
 
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, border: '2px solid #3b82f6' }}>
-                    <Avatar alt={user.name} src={user.avatar} sx={{ width: 35, height: 35 }} />
+                    <Avatar alt={user.name} 
+                    src={user.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.name || 'default'}`}
+                    sx={{ 
+                      p: 0, 
+                      border: '2px solid #3b82f6',
+                      transition: 'transform 0.2s',
+                      '&:hover': {
+                        transform: 'scale(1.1)',
+                        borderColor: '#60a5fa' 
+                      }
+                    }}
+                    />
                   </IconButton>
                 </Tooltip>
               </div>
