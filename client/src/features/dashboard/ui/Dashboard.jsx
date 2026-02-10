@@ -1,187 +1,145 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import DashHeader from "./DashHeader";
 import DashCard from "./DashCard";
-import StatCard from "./StatCard";
-import SkeletonStatCard from "./SkeletonStatCard";
 import EmptyState from "./EmptyState";
 import ActiveGoal from "./ActiveGoal";
-import useDashboardData from "../../../hooks/useDashboard";
-import { motion , AnimatePresence} from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import API from "../../../services/api";
 
 const Dashboard = () => {
-  
   const [isModalOpen, setIsmodalOpen] = useState(false);
   const [goals, setGoals] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  
+  // 1. Calculate real stats from your database goals
+  const stats = useMemo(() => {
+    const totalGoals = goals.length;
+    const avgProgress = totalGoals > 0 
+      ? Math.round(goals.reduce((acc, goal) => acc + (goal.progress || 0), 0) / totalGoals) 
+      : 0;
+    const onTrackCount = goals.filter((g) => g.status === "On Track" || (g.progress || 0) > 0).length;
+
+    return { totalGoals, avgProgress, onTrackCount };
+  }, [goals]);
+
+  // 2. Load data from Backend
   useEffect(() => {
     const fetchGoals = async () => {
       try {
+        setLoading(true);
         const { data } = await API.get("/goals/all");
         setGoals(Array.isArray(data) ? data : []);
       } catch (err) {
-        console.error("Failed to load goals:", err);
+        console.error("Fetch error:", err);
+      } finally {
+        setLoading(false);
       }
     };
-
     fetchGoals();
   }, []);
 
   const handleAddGoal = async (name) => {
-    if (!name || name.trim() === "") return;
-
+    if (!name?.trim()) return;
     try {
-      const { data: createdGoal } = await API.post("/goals/add", {
-        title: name.trim(),
-      });
-      setGoals((prev) => [createdGoal, ...prev]);
+      const { data } = await API.post("/goals/add", { title: name.trim() });
+      setGoals((prev) => [data, ...prev]);
       setIsmodalOpen(false);
     } catch (err) {
-      console.error("Failed to create goal:", err);
-      alert("Could not create the goal. Please try again.");
+      alert("Error adding goal");
     }
   };
 
   const handleDeleteGoal = async (id) => {
     try {
       await API.delete(`/goals/${id}`);
-      setGoals((prev) => prev.filter((goal) => goal._id !== id));
+      setGoals((prev) => prev.filter((g) => g._id !== id));
     } catch (err) {
-      console.error("Failed to delete goal:", err);
-      alert("Could not delete the goal. Please try again.");
+      alert("Error deleting goal");
     }
   };
 
-  const { data, loading } = useDashboardData();
-
-  const gridClassName = `grid grid-cols-1 md:grid-cols-2 gap-8 ${
-    !loading && data.length === 2
-      ? "lg:grid-cols-2 lg:justify-center"
-      : "lg:grid-cols-3"
-  }`;
-
   return (
-
-    <div className="min-h-screen bg-[#050505] relative overflow-hidden pb-20">
-      
+    <div className="min-h-screen bg-[#050505] relative overflow-hidden pb-20 font-sans">
+      {/* Background Lighting */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[40%] bg-purple-900/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="relative z-10 space-y-12">
-        
+      <div className="relative z-10">
         <DashHeader onOpenModal={() => setIsmodalOpen(true)} />
 
-        <div className="max-w-7xl mx-auto px-6 space-y-12">
-
-
-          <section>
-            <DashCard />
+        <div className="max-w-7xl mx-auto px-6 mt-12 space-y-16">
+          
+          {/* ✅ SECTION 1: TOP STATS (Fixed Grid) */}
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <DashCard 
+              title="Total Goals" 
+              value={stats.totalGoals} 
+              trend="+1 this week" 
+              color="blue"
+            />
+            <DashCard 
+              title="Avg. Progress" 
+              value={`${stats.avgProgress}%`} 
+              trend="Overall completion" 
+              color="emerald"
+            />
+            <DashCard 
+              title="On Track" 
+              value={stats.onTrackCount} 
+              trend="Active focus" 
+              color="amber"
+            />
           </section>
 
-
-          <section>
-            <div className={gridClassName}>
-              {loading &&
-                Array.from({ length: 3 }).map((_, i) => (
-                  <SkeletonStatCard key={i} />
-                ))}
-
-              {!loading && data.length === 0 && (
-                <div className="col-span-full py-10">
-                  <EmptyState />
-                </div>
-              )}
-
-              {!loading &&
-                data.map((item, i) => (
-                  <div
-                    key={i}
-                    className="transition-all duration-300 hover:translate-y-[-5px]"
-                  >
-                    <StatCard {...item} />
-                  </div>
-                ))}
-            </div>
-          </section>
-
-
+          {/* ✅ SECTION 2: ACTIVE GOALS LIST */}
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-8">
               <h2 className="text-white text-2xl font-bold tracking-tight">Active Goals</h2>
-              <span className="text-gray-500 text-sm font-medium bg-white/5 px-3 py-1 rounded-full border border-white/5">
+              <div className="text-gray-500 text-xs font-semibold bg-white/5 px-4 py-1.5 rounded-full border border-white/5 uppercase tracking-wider">
                 {goals.length} Ongoing
-              </span>
+              </div>
             </div>
             
+            {!loading && goals.length === 0 && <EmptyState />}
+
             <div className="grid grid-cols-1 gap-4">
-              <AnimatePresence>
-      {goals.map((goal) => (
-        <motion.div
-          key={goal._id || goal.title}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 50, scale: 0.95 }}
-          transition={{ duration: 0.5 }}
-        >
-          <ActiveGoal
-            id={goal._id}
-            onDelete={handleDeleteGoal}
-            {...goal}
-          />
-        </motion.div>
-      ))}
-    </AnimatePresence>
+              <AnimatePresence mode="popLayout">
+                {goals.map((goal) => (
+                  <motion.div
+                    key={goal._id}
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: 30, scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  >
+                    <ActiveGoal
+                      id={goal._id}
+                      onDelete={handleDeleteGoal}
+                      {...goal}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
           </section>
         </div>
       </div>
 
-
+      {/* Modal */}
       {isModalOpen && (
-        <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-          onClick={() => setIsmodalOpen(false)}
-        >
-          <div 
-            className="bg-[#141414]/90 backdrop-blur-2xl border border-white/10 p-8 md:p-10 rounded-[2.5rem] text-white w-full max-w-md shadow-2xl animate-in fade-in zoom-in duration-200"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4" onClick={() => setIsmodalOpen(false)}>
+          <div className="bg-[#111] border border-white/10 p-10 rounded-[2.5rem] text-white w-full max-w-md shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-3xl font-bold mb-2">New Goal</h2>
-            <p className="text-gray-400 text-sm mb-8">What is your next focus area?</p>
-
-            <div className="space-y-6">
-              <div>
-                <label className="text-[10px] uppercase tracking-widest text-gray-500 mb-2 block ml-1">Title</label>
-                <input 
-                  autoFocus
-                  id="goalInput"
-                  type="text"
-                  placeholder="e.g. Master React Hooks"
-                  className="w-full bg-white/5 border border-white/10 px-5 py-4 rounded-2xl focus:outline-none focus:border-blue-500/50 transition-all text-white placeholder:text-gray-600"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleAddGoal(e.target.value);
-                  }}
-                />
-              </div>
-
-              <div className="flex gap-3 pt-2">
-                <button 
-                  onClick={() => {
-                    const val = document.getElementById('goalInput').value;
-                    handleAddGoal(val);
-                  }}
-                  className="flex-1 bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-bold transition-all shadow-lg shadow-blue-600/20"
-                >
-                  Create
-                </button>
-                <button 
-                  onClick={() => setIsmodalOpen(false)}
-                  className="px-6 py-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all border border-white/5 text-gray-300"
-                >
-                  Cancel
-                </button>
-              </div>
+            <p className="text-gray-400 text-sm mb-8">Set your next milestone</p>
+            <input 
+              autoFocus id="goalInput" type="text" placeholder="e.g. Learn Backend"
+              className="w-full bg-white/5 border border-white/10 px-6 py-4 rounded-2xl focus:border-blue-500 outline-none transition-all mb-6"
+              onKeyDown={(e) => e.key === 'Enter' && handleAddGoal(e.target.value)}
+            />
+            <div className="flex gap-4">
+              <button onClick={() => handleAddGoal(document.getElementById('goalInput').value)} className="flex-1 bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-bold transition-all">Create</button>
+              <button onClick={() => setIsmodalOpen(false)} className="px-8 py-4 rounded-2xl bg-white/5 hover:bg-white/10 text-gray-300">Cancel</button>
             </div>
           </div>
         </div>

@@ -1,51 +1,33 @@
-import ActiveGoal from "./ActiveGoal";
-import StatCard from "./StatCard";
+import React from "react";
 
-const stats = [
-  { 
-    label: "Total Goals", 
-    value: 12, 
-    meta: "+2 this week",
-    trend : "up",
-  },
-  { 
-    label: "Completed Goals", 
-    value: 7, 
-    meta: "58% completion", 
-    progress: 58 ,
-    trend : "up",
-  },
-  { 
-    label: "Streaks", 
-    value: 5, suffix: " days", 
-    meta: "Best : 12",
-    trend : "neutral",
-  },
-  {
-    label: "Weekly Progress",
-    value: 65,
-    suffix: "%",
-    meta: "↑ 10%",
-    progress: 65,
-    trend : "down",
-  },
-];
 
-// const activeGoals = [
-//   { title: "DSA Practice", progress: 40, status: "On Track" },
-//   { title: "React Project", progress: 70, status: "At Risk" },
-// ];
+const DashCard = ({ title, value, trend, color }) => {
+  
+  
+  const colorMap = {
+    blue: "text-blue-500 bg-blue-500/10 border-blue-500/20",
+    emerald: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
+    amber: "text-amber-500 bg-amber-500/10 border-amber-500/20",
+  };
 
-const DashCard = () => (
-  <div className="w-full h-auto bg-[#1a1a1a] border border-white/5 rounded-[2.5rem] p-8 overflow-hidden rounded-4xl px-6 pt-16 py-30 justify-center">
-    <div className="max-w-7xl  mx-auto">
-      <div className="grid bg-black/10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {stats.map((stat, i) => (
-          <StatCard key={i} {...stat} />
-        ))}
+  return (
+    <div className="w-full bg-[#1a1a1a] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:border-white/20 transition-all duration-300">
+      <div>
+        <p className="text-gray-500 text-[10px] uppercase tracking-[0.2em] font-bold mb-4">
+          {title}
+        </p>
+        <h3 className="text-white text-5xl font-bold tracking-tighter">
+          {value}
+        </h3>
+      </div>
+      
+      <div className="mt-6">
+        <span className={`text-[10px] font-bold px-3 py-1 rounded-full border ${colorMap[color] || colorMap.blue}`}>
+          {trend}
+        </span>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default DashCard;
