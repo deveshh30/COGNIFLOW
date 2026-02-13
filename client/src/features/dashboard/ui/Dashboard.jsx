@@ -41,21 +41,23 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    // Listen for new goals added by ANY user/device
     socket.on("goal-added", (newGoal) => {
       setGoals((prev) => {
-        // Prevent duplicate if this tab was the one that created it
-        if (prev.find(g => g._id === newGoal._id)) return prev;
-        return [newGoal, ...prev];
+        
+        const isDuplicate = prev.some((g) => g._id === newGoal._id);
+        
+        if (isDuplicate) {
+          return prev; 
+        }
+        
+        return [newGoal, ...prev]; 
       });
     });
 
-    // Listen for deletions
     socket.on("goal-deleted", (deletedId) => {
       setGoals((prev) => prev.filter((g) => g._id !== deletedId));
     });
 
-    // Clean up listeners when component unmounts
     return () => {
       socket.off("goal-added");
       socket.off("goal-deleted");
