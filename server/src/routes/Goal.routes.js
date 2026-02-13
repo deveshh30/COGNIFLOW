@@ -16,6 +16,7 @@ router.post('/add' , async (req,res) => {
     try {
         const { title } = req.body;
         const newGoal = new Goal({ title });
+        req.io.emit("goal-added", newGoal);
         await newGoal.save();
         res.status(201).json(newGoal);
     } catch (error) {
