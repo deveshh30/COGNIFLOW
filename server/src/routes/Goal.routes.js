@@ -1,6 +1,6 @@
 import express from 'express';
 import Goal from '../models/Goal.js';
-import { updateGoalProgress } from '../controllers/Goal.controller.js';
+import { addGoal, updateGoalProgress } from '../controllers/Goal.controller.js';
 
 const router = express.Router();
 
@@ -15,17 +15,7 @@ router.get('/all' , async(req, res) => {
 
 router.patch("/progress/:id", updateGoalProgress);
 
-router.post('/add' , async (req,res) => {
-    try {
-        const { title } = req.body;
-        const newGoal = new Goal({ title });
-        req.io.emit("goal-added", newGoal);
-        await newGoal.save();
-        res.status(201).json(newGoal);
-    } catch (error) {
-    res.status(400).json({ error: error.message });
-    }
-})
+router.post('/add', addGoal);
 
 router.delete('/:id', async (req, res) => {
   try {

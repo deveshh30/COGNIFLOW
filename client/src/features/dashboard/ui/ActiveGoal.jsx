@@ -1,25 +1,17 @@
-import React, { useState, useEffect, useCallback, memo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import debounce from "lodash/debounce";
 import API from "../../../services/api";
 
-// Lightweight debounce implementation
-const debounce = (func, wait) => {
-  let timeout;
-  return (...args) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-};
-
-const ActiveGoal = ({ id, title, progress: serverProgress, onDelete, setGoals }) => {
-  
+const ActiveGoal = ({ id, title, progress: serverProgress, status, deadline, onDelete, setGoals }) => {
   
   const [localProgress, setLocalProgress] = useState(serverProgress);
 
-  
+
   useEffect(() => {
     setLocalProgress(serverProgress);
   }, [serverProgress]);
 
+  
   const getDynamicStatus = (val) => {
     if (val >= 60) return "On Track";
     if (val >= 30) return "At Risk";
@@ -35,21 +27,39 @@ const ActiveGoal = ({ id, title, progress: serverProgress, onDelete, setGoals })
   };
 
   const BAR_COLORS = {
-    "On Track": "#10b981",
-    "At Risk": "#f59e0b",
-    "Off Track": "#ef4444",
+    "On Track": "#10b981", // Emerald 500
+    "At Risk": "#f59e0b",  // Amber 500
+    "Off Track": "#ef4444", // Red 500
   };
 
-  
+  const activeColor = BAR_COLORS[currentStatus];
+
+
+  const getDeadlineInfo = (dateValue) => {
+    if (!dateValue) return { formattedDate: null, daysLeft: null };
+    const target = new Date(dateValue);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const diffTime = target - today;
+    const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const formattedDate = target.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+    return { formattedDate, daysLeft };
+  };
+
+  const { formattedDate, daysLeft } = getDeadlineInfo(deadline);
+
+  // 4. Debounced API Call (Saves to DB after user stops sliding)
   const debouncedUpdate = useCallback(
     debounce(async (val) => {
       try {
         await API.patch(`/goals/progress/${id}`, { 
           progress: val,
-          status: getDynamicStatus(val)
+          status: getDynamicStatus(val) 
         });
       } catch (err) {
-        console.error("Background sync failed", err);
+        console.error("Database sync failed", err);
       }
     }, 500),
     [id]
@@ -57,50 +67,46 @@ const ActiveGoal = ({ id, title, progress: serverProgress, onDelete, setGoals })
 
   const handleSliderChange = (e) => {
     const newProgress = parseInt(e.target.value);
+    setLocalProgress(newProgress); // Instant UI update
     
-    setLocalProgress(newProgress);
-    
+    // Update Dashboard stats immediately
     setGoals((prev) =>
-      prev.map((g) => (g._id === id ? { ...g, progress: newProgress } : g))
+      prev.map((g) => (g._id === id ? { ...g, progress: newProgress, status: getDynamicStatus(newProgress) } : g))
     );
 
     debouncedUpdate(newProgress);
   };
 
   return (
-    <div className="group relative rounded-2xl bg-[#1b1b1b] border border-white/5 mb-6 p-6 transition-all">
-      <button
-        type="button"
+    <div className="group relative rounded-2xl bg-[#1b1b1b] border border-white/5 mb-6 p-6 transition-all hover:border-white/20 shadow-xl">
+      
+      
+      <button 
         onClick={() => onDelete(id)}
-        className="absolute -top-2 -right-2 z-20 rounded-full border border-white/10 bg-[#1b1b1b] p-2 text-gray-400 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:border-red-500/50 hover:bg-red-500/20 hover:text-red-500"
-        aria-label="Delete goal"
-        title="Delete goal"
+        className="absolute -top-2 -right-2 z-20 bg-[#1b1b1b] border border-white/10 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/20 hover:border-red-500/50"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          width="16"
-          height="16"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M3 6h18" />
-          <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-          <path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14" />
-          <path d="M10 11v6" />
-          <path d="M14 11v6" />
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 hover:text-red-500">
+          <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
         </svg>
       </button>
+
+
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-sm font-semibold text-gray-100">{title}</h3>
-        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border transition-colors duration-200 ${STATUS_STYLES[currentStatus]}`}>
+        <div>
+          <h3 className="text-sm font-semibold text-gray-100 group-hover:text-blue-400 transition-colors">
+            {title}
+          </h3>
+          {formattedDate && (
+            <p className="text-[10px] text-gray-500 font-medium mt-1 uppercase tracking-wider">
+              Due: {formattedDate}
+            </p>
+          )}
+        </div>
+        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border uppercase tracking-wider transition-all duration-300 ${STATUS_STYLES[currentStatus]}`}>
           {currentStatus}
         </span>
       </div>
+
 
       <div className="relative w-full h-2 mt-4">
         <input
@@ -111,18 +117,28 @@ const ActiveGoal = ({ id, title, progress: serverProgress, onDelete, setGoals })
           onChange={handleSliderChange}
           className="absolute inset-0 w-full h-2 bg-white/5 rounded-full appearance-none cursor-pointer z-10 accent-white outline-none"
           style={{
-            background: `linear-gradient(to right, ${BAR_COLORS[currentStatus]} ${localProgress}%, transparent ${localProgress}%)`,
+            background: `linear-gradient(to right, ${activeColor} ${localProgress}%, transparent ${localProgress}%)`,
           }}
         />
         <div className="absolute inset-0 w-full h-2 bg-white/5 rounded-full border border-white/5 -z-0" />
       </div>
 
+
       <div className="flex justify-between items-center mt-3">
-        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">Progress</p>
-        <p className="text-[10px] font-bold" style={{ color: BAR_COLORS[currentStatus] }}>{localProgress}%</p>
+        {daysLeft !== null ? (
+          <p className={`text-[10px] font-bold uppercase tracking-widest ${daysLeft <= 2 ? 'text-red-500 animate-pulse' : 'text-gray-500'}`}>
+            {daysLeft > 0 ? `${daysLeft} Days Remaining` : daysLeft === 0 ? "Due Today" : "Overdue"}
+          </p>
+        ) : (
+          <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Ongoing Goal</p>
+        )}
+        
+        <p className="text-[10px] font-bold tracking-tighter" style={{ color: activeColor }}>
+          {localProgress}%
+        </p>
       </div>
     </div>
   );
 };
 
-export default memo(ActiveGoal);
+export default ActiveGoal;

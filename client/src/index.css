@@ -6,7 +6,7 @@ html, body, #root {
   margin: 0;
   padding: 0;
   background-color: #222222;
-  
+  color-scheme: dark;
 }
 
 body{
@@ -15,4 +15,25 @@ body{
 }
 html {
   scroll-behavior: smooth;
+}
+
+
+input[type="date"] {
+  color-scheme: dark;
+  accent-color: #3b82f6;
+  font-size: 16px;
+  padding: 12px !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(0.8);
+    opacity: 0.7;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    width: 24px;
+    height: 24px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
 }

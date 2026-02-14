@@ -1,11 +1,11 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose from "mongoose";
 
-const GoalSchema = new mongoose.Schema ({
-    title : {type : String, required : true},
-    progress: { type: Number, default: 0 },
-    status: { type: String, default: "On Track" },
-    createdAt: { type: Date, default: Date.now }
-});
+const goalSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  progress: { type: Number, default: 0 },
+  status: { type: String, default: "Off Track" },
+  deadline: { type: Date }, 
+}, { timestamps: true });
 
-const Goal = mongoose.model('Goal', GoalSchema);
+const Goal = mongoose.model("Goal", goalSchema);
 export default Goal;

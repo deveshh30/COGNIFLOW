@@ -12,6 +12,7 @@ const Dashboard = () => {
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [goalInput, setGoalInput] = useState("");
+  const [deadlineInput, setDeadlineInput] = useState("");
 
   // 1. Calculate real stats from your database goals
   const stats = useMemo(() => {
@@ -67,29 +68,26 @@ const Dashboard = () => {
       socket.off("goal-deleted");
     };
   }, []);
-
-  
-
-
-  
-
-
   const handleAddGoal = async (name) => {
     const value = (name ?? goalInput).trim();
     if (!value) return;
     try {
-      const { data } = await API.post("/goals/add", { title: value });
+      const payload = {
+        title: value,
+        ...(deadlineInput && { deadline: deadlineInput })
+      };
+      const { data } = await API.post("/goals/add", payload);
       setGoals((prev) => {
         const exists = prev.some((g) => g._id === data?._id);
         return exists ? prev : [data, ...prev];
       });
       setIsmodalOpen(false);
       setGoalInput("");
+      setDeadlineInput("");
     } catch (err) {
       alert("Error adding goal");
     }
   };
-
   const handleDeleteGoal = async (id) => {
     try {
       await API.delete(`/goals/${id}`);
@@ -173,10 +171,13 @@ const Dashboard = () => {
                       transition={{ duration: 0.2 }}
                     >
                       <ActiveGoal
-                        key={goal._id}
+                        key={goal._id} 
                         id={goal._id}
+                        title={goal.title}
+                        progress={goal.progress}
+                        deadline={goal.deadline} 
                         onDelete={handleDeleteGoal}
-                        setGoals={setGoals} 
+                        setGoals={setGoals}
                         {...goal}
                       />
                     </motion.div>
@@ -195,6 +196,7 @@ const Dashboard = () => {
           onClick={() => {
             setIsmodalOpen(false);
             setGoalInput("");
+            setDeadlineInput("");
           }}
         >
           <div
@@ -210,9 +212,20 @@ const Dashboard = () => {
               placeholder="e.g. Learn Backend"
               value={goalInput}
               onChange={(e) => setGoalInput(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 px-6 py-4 rounded-2xl focus:border-blue-500 outline-none transition-all mb-6"
+              className="w-full bg-zinc-900/40 border border-zinc-800/50 px-6 py-4 rounded-2xl focus:border-zinc-600/50 outline-none transition-all mb-6 text-zinc-300 placeholder:text-zinc-600"
               onKeyDown={(e) => e.key === "Enter" && handleAddGoal()}
             />
+            
+            <input 
+                type="date"
+                value={deadlineInput} 
+                onChange={(e) => {
+                  console.log("Date Selected:", e.target.value); 
+                  setDeadlineInput(e.target.value);
+                }}
+                className="w-full bg-zinc-900/40 border border-zinc-800/50 px-6 py-5 rounded-2xl focus:border-zinc-600/50 outline-none transition-all mb-6 text-zinc-300 placeholder:text-zinc-600 text-lg"
+              />
+
             <div className="flex gap-4">
               <button
                 onClick={() => handleAddGoal()}
@@ -225,6 +238,7 @@ const Dashboard = () => {
                 onClick={() => {
                   setIsmodalOpen(false);
                   setGoalInput("");
+                  setDeadlineInput("");
                 }}
                 className="px-8 py-4 rounded-2xl bg-white/5 hover:bg-white/10 text-gray-300"
               >
