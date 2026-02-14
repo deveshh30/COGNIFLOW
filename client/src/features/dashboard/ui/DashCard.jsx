@@ -1,30 +1,53 @@
-import React from "react";
-
+import { useEffect, useRef } from "react";
+import { animate } from "framer-motion";
 
 const DashCard = ({ title, value, trend, color }) => {
-  
-  
+  const countRef = useRef(null);
+
+  useEffect(() => {
+    
+    const numericTarget = typeof value === "string" ? parseInt(value) : value;
+    
+    
+    const currentVal = parseInt(countRef.current.textContent) || 0;
+
+    
+    const controls = animate(currentVal, numericTarget, {
+      duration: 1.2,
+      ease: "easeOut",
+      onUpdate(latest) {
+        if (countRef.current) {
+          const suffix = typeof value === "string" && value.includes("%") ? "%" : "";
+          countRef.current.textContent = Math.round(latest) + suffix;
+        }
+      },
+    });
+
+    return () => controls.stop();
+  }, [value]); 
+
   const colorMap = {
-    blue: "text-blue-500 bg-blue-500/10 border-blue-500/20",
-    emerald: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
-    amber: "text-amber-500 bg-amber-500/10 border-amber-500/20",
+    blue: "bg-blue-500",
+    emerald: "bg-emerald-500",
+    amber: "bg-amber-500",
   };
 
   return (
-    <div className="w-full bg-[#1a1a1a] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:border-white/20 transition-all duration-300">
-      <div>
-        <p className="text-gray-500 text-[10px] uppercase tracking-[0.2em] font-bold mb-4">
+    <div className="bg-[#111] border border-white/5 p-8 rounded-[2rem] relative overflow-hidden">
+      <div className="relative z-10">
+        <p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-4">
           {title}
         </p>
-        <h3 className="text-white text-5xl font-bold tracking-tighter">
-          {value}
-        </h3>
-      </div>
-      
-      <div className="mt-6">
-        <span className={`text-[10px] font-bold px-3 py-1 rounded-full border ${colorMap[color] || colorMap.blue}`}>
-          {trend}
-        </span>
+        
+        
+        <h2 ref={countRef} className="text-5xl font-bold text-white mb-4">
+          0
+        </h2>
+
+        <div className="flex items-center gap-2">
+          <span className={`w-1.5 h-1.5 rounded-full ${colorMap[color]} animate-pulse`} />
+          <p className="text-gray-500 text-[10px] font-medium tracking-tight">{trend}</p>
+        </div>
       </div>
     </div>
   );

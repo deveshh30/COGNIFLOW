@@ -1,5 +1,6 @@
 import express from 'express';
 import Goal from '../models/Goal.js';
+import { updateGoalProgress } from '../controllers/Goal.controller.js';
 
 const router = express.Router();
 
@@ -11,6 +12,8 @@ router.get('/all' , async(req, res) => {
     res.status(500).json({ error: error.message });
     }
 })
+
+router.patch("/progress/:id", updateGoalProgress);
 
 router.post('/add' , async (req,res) => {
     try {

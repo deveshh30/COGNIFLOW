@@ -68,6 +68,11 @@ const Dashboard = () => {
     };
   }, []);
 
+  
+
+
+  
+
 
   const handleAddGoal = async (name) => {
     const value = (name ?? goalInput).trim();
