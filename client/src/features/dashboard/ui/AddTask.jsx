@@ -22,11 +22,11 @@ const AddTaskModal = ({ isOpen, onClose, onRefresh }) => {
     <div className="fixed inset-0 rounded-2xl z-100 flex items-center justify-center p-4">
 
       <div 
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" 
+        className="absolute inset-0 bg-black/60 backdrop-blur-[5px] transition-opacity" 
         onClick={onClose} 
       />
       <div className="relative w-full max-w-md transform-gpu animate-in fade-in zoom-in duration-200">
-        <div className="backdrop-blur-2xl bg-white/[0.05] border border-white/10 rounded-[2.5rem] p-8 shadow-[0_22px_70px_rgba(0,0,0,0.9)]">
+        <div className="backdrop-blur-[5px] bg-white/[0.05] border border-white/10 rounded-[2.5rem] p-8 shadow-[0_22px_70px_rgba(0,0,0,0.9)]">
           
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold text-white tracking-tight">New Task</h2>

@@ -15,19 +15,16 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^5.18.0",
     "@mui/material": "^5.18.0",
-    "@react-three/fiber": "^9.5.0",
     "@tailwindcss/vite": "^4.1.18",
     "axios": "^1.13.4",
     "framer-motion": "^12.34.0",
     "gh-pages": "^6.3.0",
     "lucide-react": "^0.563.0",
-    "primereact": "^10.9.7",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.13.0",
     "socket.io-client": "^4.8.3",
-    "tailwindcss": "^4.1.18",
-    "three": "^0.182.0"
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

@@ -13,7 +13,7 @@ const BAR_COLORS = {
 
 const cardBase =
   "relative rounded-3xl border border-white/10 " +
-  "backdrop-blur-md bg-white/[0.03] " + // The "Crystal" effect
+  "backdrop-blur-[5px] bg-white/[0.03] " + // The "Crystal" effect
   "shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] " +
   "transition-all duration-300 ease-out " +
   "hover:bg-white/[0.06] hover:border-white/20 " +

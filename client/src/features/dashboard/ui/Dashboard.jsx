@@ -79,7 +79,10 @@ const Dashboard = () => {
     if (!value) return;
     try {
       const { data } = await API.post("/goals/add", { title: value });
-      setGoals((prev) => [data, ...prev]);
+      setGoals((prev) => {
+        const exists = prev.some((g) => g._id === data?._id);
+        return exists ? prev : [data, ...prev];
+      });
       setIsmodalOpen(false);
       setGoalInput("");
     } catch (err) {
@@ -99,8 +102,8 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-[#050505] relative overflow-hidden pb-20 font-sans">
       {/* Background Lighting */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[40%] bg-purple-900/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[30px] pointer-events-none" />
+      <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[40%] bg-purple-900/10 rounded-full blur-[30px] pointer-events-none" />
 
       <div className="relative z-10">
         <DashHeader
@@ -160,15 +163,14 @@ const Dashboard = () => {
 
             {!loading && (
               <div className="grid grid-cols-1 gap-4">
-                <AnimatePresence mode="popLayout">
+                <AnimatePresence>
                   {goals.map((goal) => (
                     <motion.div
                       key={goal._id}
-                      layout
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, x: 30, scale: 0.98 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.2 }}
                     >
                       <ActiveGoal
                         key={goal._id}
@@ -189,7 +191,7 @@ const Dashboard = () => {
       {/* Modal */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+          className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 backdrop-blur-[5px] p-4"
           onClick={() => {
             setIsmodalOpen(false);
             setGoalInput("");
