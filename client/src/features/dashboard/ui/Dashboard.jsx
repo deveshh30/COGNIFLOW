@@ -43,15 +43,18 @@ const Dashboard = () => {
   useEffect(() => {
     socket.on("goal-added", (newGoal) => {
       setGoals((prev) => {
-        
         const isDuplicate = prev.some((g) => g._id === newGoal._id);
-        
         if (isDuplicate) {
           return prev; 
         }
-        
         return [newGoal, ...prev]; 
       });
+    });
+
+    socket.on("goal-progress-updated", ({ id, progress }) => {
+      setGoals((prev) =>
+        prev.map((g) => (g._id === id ? { ...g, progress } : g))
+      );
     });
 
     socket.on("goal-deleted", (deletedId) => {
@@ -60,6 +63,7 @@ const Dashboard = () => {
 
     return () => {
       socket.off("goal-added");
+      socket.off("goal-progress-updated");
       socket.off("goal-deleted");
     };
   }, []);
@@ -139,7 +143,7 @@ const Dashboard = () => {
                 {Array.from({ length: 3 }).map((_, i) => (
                   <div
                     key={`goal-skel-${i}`}
-                    className="h-[88px] rounded-2xl border border-white/10 bg-white/5 animate-pulse"
+                    className="h-22 rounded-2xl border border-white/10 bg-white/5 animate-pulse"
                   />
                 ))}
               </div>
@@ -162,8 +166,10 @@ const Dashboard = () => {
                       transition={{ type: "spring", stiffness: 400, damping: 30 }}
                     >
                       <ActiveGoal
+                        key={goal._id}
                         id={goal._id}
                         onDelete={handleDeleteGoal}
+                        setGoals={setGoals} 
                         {...goal}
                       />
                     </motion.div>
@@ -178,7 +184,7 @@ const Dashboard = () => {
       {/* Modal */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+          className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
           onClick={() => {
             setIsmodalOpen(false);
             setGoalInput("");
