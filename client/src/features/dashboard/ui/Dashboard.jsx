@@ -86,6 +86,7 @@ const Dashboard = () => {
       alert("Error adding goal");
     }
   };
+  const completedCount = goals.filter(g => (g.progress || 0) === 100).length;
 
   const handleDeleteGoal = async (id) => {
     try {
@@ -105,7 +106,7 @@ const Dashboard = () => {
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[30px] pointer-events-none" />
       
       <div className="relative z-10">
-        <DashHeader onOpenModal={() => setIsmodalOpen(true)} />
+        <DashHeader onOpenModal={() => setIsmodalOpen(true)} completedCount={completedCount}/>
 
         <div className="max-w-7xl mx-auto px-6 mt-12 space-y-16">
           {/* STATS CARDS */}

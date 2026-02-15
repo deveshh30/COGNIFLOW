@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import API from "../../../services/api";
 import { CheckCircle, Trash2, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useMemo } from "react";
 
 const CompletedGoals = () => {
   const [completedGoals, setCompletedGoals] = useState([]);
@@ -33,6 +34,35 @@ const CompletedGoals = () => {
     }
   };
 
+const stats = useMemo(() => {
+  if (completedGoals.length === 0) return null;
+
+  const durations = completedGoals.map(g => {
+    const start = new Date(g.createdAt);
+    const end = new Date(g.updatedAt);
+    return (end - start) / (1000 * 60 * 60 * 24); 
+  });
+
+  const avgDays = (durations.reduce((a, b) => a + b, 0) / durations.length).toFixed(1);
+  const totalWins = completedGoals.length;
+
+  return { avgDays, totalWins };
+}, [completedGoals]);
+
+const efficiency = (goal) => {
+  const finishDate = new Date(goal.updatedAt);
+  const deadline = new Date(goal.deadline);
+  
+  if (!goal.deadline) return { text: "No Deadline Set", color: "zinc" };
+  
+  if (finishDate <= deadline) {
+    return { text: "Ahead of Schedule", color: "emerald" };
+  } else {
+    const daysLate = Math.ceil((finishDate - deadline) / (1000 * 60 * 60 * 24));
+    return { text: `${daysLate} Days Overdue`, color: "amber" };
+  }
+};
+
   return (
     <div className="min-h-screen bg-[#050505] text-white p-8">
       <div className="max-w-4xl mx-auto">
@@ -46,8 +76,8 @@ const CompletedGoals = () => {
         </button>
 
         <header className="mb-12">
-          <h1 className="text-4xl font-bold mb-2">Goal Archive</h1>
-          <p className="text-zinc-500">A timeline of everything you've conquered.</p>
+          <h1 className="text-4xl font-bold mb-2">Completed Goals</h1>
+          <p className="text-zinc-500">A timeline of everything you've conquered 🏆</p>
         </header>
 
         {loading ? (
@@ -75,6 +105,14 @@ const CompletedGoals = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg">{goal.title}</h3>
+                      <div className="flex gap-3 items-center">
+                        <span className="text-[10px] text-zinc-500">
+                          ⏱️ {Math.ceil((new Date(goal.updatedAt) - new Date(goal.createdAt)) / (1000*60*60*24))} days
+                        </span>
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full bg-${efficiency.color}-500/10 text-${efficiency.color}-500`}>
+                          {efficiency.text}
+                        </span>
+                      </div>
                       <p className="text-xs text-zinc-500">
                         Finished on {new Date(goal.updatedAt).toLocaleDateString()}
                       </p>
