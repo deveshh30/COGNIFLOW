@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './features/auth/Login';
 import SignUp from './features/auth/SignUp';
 import Dashboard from './features/dashboard/ui/Dashboard';
+import CompletedGoals from './features/dashboard/ui/CompletedGoal';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
 
             <Route path="*" element={<Navigate to="/login" />} />
+            <Route path="/archive" element={<CompletedGoals />} />
           </Routes>
         </main>
       

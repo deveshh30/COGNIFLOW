@@ -157,37 +157,7 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                {/* COMPLETED GOALS */}
-                {completedGoals.length > 0 && (
-                  <div className="pt-10 border-t border-white/5">
-                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-[#E1DFEA]">
-                      Completed Goals
-                      <span className="text-sm bg-emerald-500/15 text-emerald-300 px-3 py-1 rounded-full">
-                        {completedGoals.length}
-                      </span>
-                    </h2>
-                    <div className="grid grid-cols-1 gap-3">
-                      {completedGoals.map((goal) => (
-                        <div key={goal._id} className="p-5 bg-zinc-900/30 border border-white/5 rounded-2xl flex justify-between items-center group">
-                          <span className="text-zinc-400 line-through decoration-blue-500/50 group-hover:text-zinc-200 transition-colors">
-                            {goal.title}
-                          </span>
-                          <div className="flex items-center gap-4">
-                            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest bg-emerald-500/10 px-3 py-1 rounded-lg">
-                              Completed
-                            </span>
-                            <button 
-                              onClick={() => handleDeleteGoal(goal._id)}
-                              className="text-zinc-600 hover:text-red-400 transition-colors text-sm"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                
               </div>
             )}
           </section>

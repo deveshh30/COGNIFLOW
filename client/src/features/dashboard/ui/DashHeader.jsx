@@ -12,7 +12,7 @@ import { AuthContext } from "../../../context/AuthContext";
 
 const pages = [
   { label: "Dashboard", path: "/dashboard" },
-  { label: "Goals", path: "/goals" },
+  { label: "Completed Goals", path: "/archive" },
   { label: "Weekly Report", path: "/report" },
 ];
 
