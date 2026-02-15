@@ -51,7 +51,14 @@ const ActiveGoal = ({ id, title, progress: serverProgress, status, deadline, onD
 
   const { formattedDate, daysLeft } = getDeadlineInfo(deadline);
 
-  
+  const getPriorityStyles = (p) => {
+  switch (p) {
+    case "High": return "bg-red-500/10 text-red-500 border-red-500/20";
+    case "Medium": return "bg-amber-500/10 text-amber-500 border-amber-500/20";
+    case "Low": return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
+    default: return "bg-zinc-500/10 text-zinc-400 border-white/10";
+  }
+};
 
   
   const debouncedUpdate = useCallback(
@@ -109,6 +116,9 @@ const ActiveGoal = ({ id, title, progress: serverProgress, status, deadline, onD
           <h3 className="text-sm font-semibold text-gray-100 group-hover:text-blue-400 transition-colors">
             {title}
           </h3>
+          <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${getPriorityStyles(priority)}`}>
+            {priority}
+          </span>
           {formattedDate && (
             <p className="text-[10px] text-gray-500 font-medium mt-1 uppercase tracking-wider">
               Due: {formattedDate}
@@ -133,7 +143,7 @@ const ActiveGoal = ({ id, title, progress: serverProgress, status, deadline, onD
             background: `linear-gradient(to right, ${activeColor} ${localProgress}%, transparent ${localProgress}%)`,
           }}
         />
-        <div className="absolute inset-0 w-full h-2 bg-white/5 rounded-full border border-white/5 -z-0" />
+        <div className="absolute inset-0 w-full h-2 bg-white/5 rounded-full border border-white/5 z-0" />
       </div>
 
 

@@ -17,10 +17,16 @@ const Dashboard = () => {
   // 1. Calculate stats
   const stats = useMemo(() => {
     const totalGoals = goals.length;
-    const avgProgress = totalGoals > 0 
-      ? Math.round(goals.reduce((acc, goal) => acc + (goal.progress || 0), 0) / totalGoals) 
-      : 0;
-    const onTrackCount = goals.filter((g) => g.status === "On Track" || (g.progress || 0) > 0).length;
+    const avgProgress =
+      totalGoals > 0
+        ? Math.round(
+            goals.reduce((acc, goal) => acc + (goal.progress || 0), 0) /
+              totalGoals,
+          )
+        : 0;
+    const onTrackCount = goals.filter(
+      (g) => g.status === "On Track" || (g.progress || 0) > 0,
+    ).length;
 
     return { totalGoals, avgProgress, onTrackCount };
   }, [goals]);
@@ -46,13 +52,13 @@ const Dashboard = () => {
     socket.on("goal-added", (newGoal) => {
       setGoals((prev) => {
         const isDuplicate = prev.some((g) => g._id === newGoal._id);
-        return isDuplicate ? prev : [newGoal, ...prev]; 
+        return isDuplicate ? prev : [newGoal, ...prev];
       });
     });
 
     socket.on("goal-progress-updated", ({ id, progress, status }) => {
       setGoals((prev) =>
-        prev.map((g) => (g._id === id ? { ...g, progress, status } : g))
+        prev.map((g) => (g._id === id ? { ...g, progress, status } : g)),
       );
     });
 
@@ -72,7 +78,8 @@ const Dashboard = () => {
     try {
       const payload = {
         title: goalInput.trim(),
-        ...(deadlineInput && { deadline: deadlineInput })
+        priority: priority,
+        ...(deadlineInput && { deadline: deadlineInput }),
       };
       const { data } = await API.post("/goals/add", payload);
       setGoals((prev) => {
@@ -86,7 +93,9 @@ const Dashboard = () => {
       alert("Error adding goal");
     }
   };
-  const completedCount = goals.filter(g => (g.progress || 0) === 100).length;
+
+
+  const completedCount = goals.filter((g) => (g.progress || 0) === 100).length;
 
   const handleDeleteGoal = async (id) => {
     try {
@@ -98,22 +107,46 @@ const Dashboard = () => {
   };
 
   // 4. Split Goals for the UI
-  const activeGoals = goals.filter(g => (g.progress || 0) < 100);
-  const completedGoals = goals.filter(g => (g.progress || 0) === 100);
+  const activeGoals = goals
+  .filter(g => (g.progress || 0) < 100)
+  .sort((a, b) => {
+    const weights = { High: 3, Medium: 2, Low: 1 };
+    return weights[b.priority || "Medium"] - weights[a.priority || "Medium"];
+  });
+  const completedGoals = goals.filter((g) => (g.progress || 0) === 100);
+  const [priority, setPriority] = useState("Medium")
 
   return (
     <div className="min-h-screen bg-[#050505] relative overflow-hidden pb-20 font-sans">
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[30px] pointer-events-none" />
-      
+
       <div className="relative z-10">
-        <DashHeader onOpenModal={() => setIsmodalOpen(true)} completedCount={completedCount}/>
+        <DashHeader
+          onOpenModal={() => setIsmodalOpen(true)}
+          completedCount={completedCount}
+        />
 
         <div className="max-w-7xl mx-auto px-6 mt-12 space-y-16">
           {/* STATS CARDS */}
           <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <DashCard title="Total Goals" value={stats.totalGoals} trend="+1 this week" color="blue" />
-            <DashCard title="Avg. Progress" value={`${stats.avgProgress}%`} trend="Overall completion" color="emerald" />
-            <DashCard title="On Track" value={stats.onTrackCount} trend="Active focus" color="amber" />
+            <DashCard
+              title="Total Goals"
+              value={stats.totalGoals}
+              trend="+1 this week"
+              color="blue"
+            />
+            <DashCard
+              title="Avg. Progress"
+              value={`${stats.avgProgress}%`}
+              trend="Overall completion"
+              color="emerald"
+            />
+            <DashCard
+              title="On Track"
+              value={stats.onTrackCount}
+              trend="Active focus"
+              color="amber"
+            />
           </section>
 
           {/* MAIN LIST SECTION */}
@@ -121,7 +154,10 @@ const Dashboard = () => {
             {loading ? (
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-24 rounded-2xl bg-white/5 animate-pulse" />
+                  <div
+                    key={i}
+                    className="h-24 rounded-2xl bg-white/5 animate-pulse"
+                  />
                 ))}
               </div>
             ) : goals.length === 0 ? (
@@ -131,7 +167,7 @@ const Dashboard = () => {
                 {/* ACTIVE GOALS */}
                 <div>
                   <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-white">
-                    Active Focus 
+                    Active Focus
                     <span className="text-sm bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full">
                       {activeGoals.length}
                     </span>
@@ -157,8 +193,6 @@ const Dashboard = () => {
                     </AnimatePresence>
                   </div>
                 </div>
-
-                
               </div>
             )}
           </section>
@@ -172,7 +206,7 @@ const Dashboard = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
             onClick={() => setIsmodalOpen(false)}
           >
             <motion.div
@@ -182,10 +216,12 @@ const Dashboard = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <h2 className="text-3xl font-bold mb-2">New Goal</h2>
-              <p className="text-gray-400 text-sm mb-8">Set your next milestone</p>
-              
+              <p className="text-gray-400 text-sm mb-8">
+                Set your next milestone
+              </p>
+
               <div className="space-y-4">
-                <input 
+                <input
                   autoFocus
                   placeholder="e.g. Learn Backend"
                   value={goalInput}
@@ -193,13 +229,29 @@ const Dashboard = () => {
                   className="w-full bg-white/5 border border-white/10 px-6 py-4 rounded-2xl focus:border-blue-500 outline-none transition-all"
                   onKeyDown={(e) => e.key === "Enter" && handleAddGoal()}
                 />
-                
-                <input 
+
+                <input
                   type="date"
-                  value={deadlineInput} 
+                  value={deadlineInput}
                   onChange={(e) => setDeadlineInput(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 px-6 py-4 rounded-2xl focus:border-blue-500 outline-none transition-all text-zinc-300"
                 />
+
+                <p className="text-gray-400 text-sm mb-3">Set Priority</p>
+                <div className="flex gap-2 mb-6">
+                  {["Low", "Medium", "High"].map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setPriority(p)}
+                      className={`flex-1 py-2 rounded-xl border text-xs font-bold transition-all ${
+                        priority === p 
+                          ? "bg-blue-600 border-blue-500 text-white" 
+                          : "bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10"
+                      }`}
+                    >
+                      {p.toUpperCase()}
+                    </button>
+                  ))}
               </div>
 
               <div className="flex gap-4 mt-8">
@@ -217,6 +269,7 @@ const Dashboard = () => {
                   Cancel
                 </button>
               </div>
+        </div>
             </motion.div>
           </motion.div>
         )}
