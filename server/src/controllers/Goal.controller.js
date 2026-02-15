@@ -19,26 +19,21 @@ export const addGoal = async (req, res) => {
 
 
 export const updateGoalProgress = async (req, res) => {
+  const { id } = req.params;
+  const { progress } = req.body;
+
+  let status = "At Risk";
+  if (progress >= 60) status = "On Track";
+  if (progress === 100) status = "Completed"; 
+
   try {
-    const { id } = req.params;
-    const { progress, status } = req.body;
-
-    
     const updatedGoal = await Goal.findByIdAndUpdate(
-      id,
-      { progress, status },
-      { new: true } 
+      id, 
+      { progress, status }, 
+      { new: true }
     );
-
-    if (!updatedGoal) {
-        return res.status(404).json({ message: "Goal not found" });
-    }
-
-    
-    req.io.emit("goal-progress-updated", { id, progress, status });
-
-    res.status(200).json(updatedGoal);
+    res.json(updatedGoal);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 };

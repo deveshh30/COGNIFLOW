@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import debounce from "lodash/debounce";
+import confetti from 'canvas-confetti';
 import API from "../../../services/api";
 
 const ActiveGoal = ({ id, title, progress: serverProgress, status, deadline, onDelete, setGoals }) => {
@@ -50,7 +51,9 @@ const ActiveGoal = ({ id, title, progress: serverProgress, status, deadline, onD
 
   const { formattedDate, daysLeft } = getDeadlineInfo(deadline);
 
-  // 4. Debounced API Call (Saves to DB after user stops sliding)
+  
+
+  
   const debouncedUpdate = useCallback(
     debounce(async (val) => {
       try {
@@ -67,7 +70,17 @@ const ActiveGoal = ({ id, title, progress: serverProgress, status, deadline, onD
 
   const handleSliderChange = (e) => {
     const newProgress = parseInt(e.target.value);
-    setLocalProgress(newProgress); // Instant UI update
+    setLocalProgress(newProgress);
+    
+    if (newProgress === 100) {
+      confetti({
+        particleCount : 40,
+        spread : 50,
+        origin: { y: 0.8 },
+        colors: ['#3b82f6', '#10b981', '#ffffff'],
+        zIndex: 999
+      })
+    }
     
     // Update Dashboard stats immediately
     setGoals((prev) =>
