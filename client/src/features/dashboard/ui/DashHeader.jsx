@@ -27,6 +27,16 @@ function DashHeader({ onOpenModal, completedCount }) {
   const handleCloseNavMenu = () => setAnchorElNav(null);
   const handleCloseUserMenu = () => setAnchorElUser(null);
 
+  const handleGoToProfile = () => {
+    handleCloseUserMenu();
+    navigate("/profile");
+  };
+
+  const handleGoToSettings = () => {
+    handleCloseUserMenu();
+    navigate("/settings");
+  };
+
   const handleLogout = () => {
     handleCloseUserMenu();
     logout();
@@ -203,10 +213,10 @@ function DashHeader({ onOpenModal, completedCount }) {
                 }
               }}
             >
-              <MenuItem onClick={handleCloseUserMenu} component={Link} to="/profile" sx={{ py: 1.5 }}>
+              <MenuItem onClick={handleGoToProfile} sx={{ py: 1.5 }}>
                 <UserIcon size={16} className="mr-3 text-zinc-400" /> Profile
               </MenuItem>
-              <MenuItem onClick={handleCloseUserMenu} component={Link} to="/settings" sx={{ py: 1.5 }}>
+              <MenuItem onClick={handleGoToSettings} sx={{ py: 1.5 }}>
                 <Settings size={16} className="mr-3 text-zinc-400" /> Settings
               </MenuItem>
               <Box sx={{ borderTop: '1px solid #333', my: 1 }} />

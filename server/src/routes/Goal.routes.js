@@ -17,6 +17,7 @@ router.patch("/progress/:id", updateGoalProgress);
 
 router.post('/add', addGoal);
 
+
 router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;

@@ -3,7 +3,7 @@ import debounce from "lodash/debounce";
 import confetti from 'canvas-confetti';
 import API from "../../../services/api";
 
-const ActiveGoal = ({ id, title, progress: serverProgress, status, deadline, onDelete, setGoals }) => {
+const ActiveGoal = ({ id, title, progress: serverProgress, status, deadline, onDelete, setGoals , priority  }) => {
   
   const [localProgress, setLocalProgress] = useState(serverProgress);
 

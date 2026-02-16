@@ -6,6 +6,9 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: '/COGNIFLOW/',
+  resolve: {
+    dedupe: ["react", "react-dom"],
+  },
   server: {
     proxy: {
       "/api": {
